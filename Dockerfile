@@ -1,17 +1,40 @@
-FROM python:3.9-slim
+FROM ubuntu:20.04
 
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    jq
+# Define build-time arguments
+ARG DEBIAN_FRONTEND=noninteractive
 
-RUN pip install flask requests
+# Set environment variables
+ENV LANG=C.UTF-8 \
+    PATH="/usr/local/bin:$PATH"
 
-ENV APP_ENV=production
-ENV LOG_LEVEL=debug
+# Expose typical development ports
+EXPOSE 3000 8080
 
-COPY ./src /app
+# Install useful CLI tools
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        wget \
+        git \
+        jq \
+        unzip \
+        vim \
+        net-tools \
+        iputils-ping && \
+    rm -rf /var/lib/apt/lists/*
 
-EXPOSE 8080
+# Add a custom script
+COPY tools/setup.sh /usr/local/bin/setup.sh
+RUN chmod +x /usr/local/bin/setup.sh
 
-CMD ["python", "/app/server.py"]
+# Run the script (demonstrates a shell step)
+RUN /usr/local/bin/setup.sh
+
+# Use Heredoc to define multi-line command
+RUN bash <<EOF
+echo "Installing mytool..."
+curl -sL https://example.com/install.sh | bash
+EOF
+
+# Final command
+CMD ["bash"]
