@@ -17,9 +17,9 @@ RUN apt-get update && \
         wget \
         git \
         jq \
-        unzip \
+        make \
         vim \
-        net-tools \
+        kubectl \
         iputils-ping && \
     rm -rf /var/lib/apt/lists/*
 
